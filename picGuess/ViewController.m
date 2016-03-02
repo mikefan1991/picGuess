@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+#import "Question.h"
 #define picButtonW 180
 #define picButtonH 180
 
@@ -20,12 +21,21 @@
 @property (nonatomic,strong) UIButton* rightButton1;
 @property (nonatomic,strong) UIButton* rightButton2;
 @property (nonatomic,strong) UIButton* coinButton;
+@property (nonatomic,strong) UIButton* cover;
+@property (nonatomic,strong) NSArray* questions;
 @end
 
 @implementation ViewController
 //change the status bar to light color
 - (UIStatusBarStyle)preferredStatusBarStyle {
     return UIStatusBarStyleLightContent;
+}
+
+- (NSArray *)questions {
+    if(_questions==nil) {
+        _questions = [Question questions];
+    }
+    return _questions;
 }
 
 - (UIImageView *)backGround {
@@ -61,8 +71,10 @@
         _picButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, picButtonW, picButtonH)];
         _picButton.center = CGPointMake(self.view.frame.size.width*0.5, CGRectGetMaxY(self.titleLabel.frame)+picButtonH*0.5+10);
         [_picButton setBackgroundImage:[UIImage imageNamed:@"center_img"] forState:UIControlStateNormal];
+        [_picButton setBackgroundImage:[UIImage imageNamed:@"center_img"] forState:UIControlStateHighlighted];
         [_picButton setContentEdgeInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
         [_picButton setImage:[UIImage imageNamed:@"movie_jf"] forState:UIControlStateNormal];
+        [_picButton setImage:[UIImage imageNamed:@"movie_jf"] forState:UIControlStateHighlighted];
         
     }
     return _picButton;
@@ -121,8 +133,20 @@
         [_coinButton setImage:[UIImage imageNamed:@"coin"] forState:UIControlStateNormal];
         [_coinButton setTitle:@"0" forState:UIControlStateNormal];
         [_coinButton setContentHorizontalAlignment:UIControlContentHorizontalAlignmentRight];
+        _coinButton.userInteractionEnabled = NO;
     }
     return _coinButton;
+}
+
+- (UIButton *)cover {
+    if(_cover==nil) {
+        _cover = [[UIButton alloc] initWithFrame:self.view.bounds];
+        _cover.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.6];
+        [self.view addSubview:_cover];
+        _cover.alpha = 0.0;
+        [_cover addTarget:self action:@selector(resizeImage) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _cover;
 }
 
 - (void)viewDidLoad {
@@ -137,41 +161,31 @@
     [self.view addSubview:self.rightButton1];
     [self.view addSubview:self.rightButton2];
     [self.view addSubview:self.coinButton];
-    [self.picButton addTarget:self action:@selector(bigImage) forControlEvents:UIControlEventTouchUpInside];
+    [self.picButton addTarget:self action:@selector(resizeImage) forControlEvents:UIControlEventTouchUpInside];
 }
 
-- (void) bigImage {
-    //add a cover on the screen and make background blur
-    UIButton* cover = [[UIButton alloc] initWithFrame:self.view.bounds];
-    cover.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.6];
-    [self.view addSubview:cover];
-    cover.alpha = 0.0;
-    [cover addTarget:self action:@selector(smallImage:) forControlEvents:UIControlEventTouchUpInside];
+- (void) resizeImage {
+    if(self.cover.alpha==0.0) {
+        //move the picButton to the top
+        [self.view bringSubviewToFront:self.picButton];
     
-    //move the picButton to the top
-    [self.view bringSubviewToFront:self.picButton];
-    
-    //enlarge the picButton to fit the screen
-    CGFloat w = self.view.bounds.size.width;
-    CGFloat h = w;
-    CGFloat y = (self.view.bounds.size.height-h)*0.5;
-    [UIView animateWithDuration:1.0 animations:^{
-        self.picButton.frame = CGRectMake(0, y, w, h);
-        cover.alpha = 1.0;
-    }];
+        //enlarge the picButton to fit the screen
+        CGFloat w = self.view.bounds.size.width;
+        CGFloat h = w;
+        CGFloat y = (self.view.bounds.size.height-h)*0.5;
+        [UIView animateWithDuration:1.0 animations:^{
+            self.picButton.frame = CGRectMake(0, y, w, h);
+            self.cover.alpha = 1.0;
+        }];
+    }
+    else {
+        [UIView animateWithDuration:1.0 animations:^{
+            self.picButton.frame = CGRectMake(0, 0, picButtonW, picButtonH);
+            self.picButton.center = CGPointMake(self.view.frame.size.width*0.5, CGRectGetMaxY(self.titleLabel.frame)+picButtonH*0.5+10);
+            self.cover.alpha = 0.0;
+        }];
+    }
 }
-
-- (void) smallImage:(UIButton*)cover {
-    [UIView animateWithDuration:1.0 animations:^{
-    self.picButton.frame = CGRectMake(0, 0, picButtonW, picButtonH);
-    self.picButton.center = CGPointMake(self.view.frame.size.width*0.5, CGRectGetMaxY(self.titleLabel.frame)+picButtonH*0.5+10);
-    cover.alpha = 0.0;
-    } completion:^(BOOL finished) {
-        [cover removeFromSuperview];
-    }];
-
-}
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

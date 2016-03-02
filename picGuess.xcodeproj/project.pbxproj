@@ -15,6 +15,8 @@
 		272741821C8558E400F94AB3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 272741801C8558E400F94AB3 /* LaunchScreen.storyboard */; };
 		2727418D1C8558E400F94AB3 /* picGuessTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2727418C1C8558E400F94AB3 /* picGuessTests.m */; };
 		272741981C8558E400F94AB3 /* picGuessUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 272741971C8558E400F94AB3 /* picGuessUITests.m */; };
+		272741A61C873AFD00F94AB3 /* questions.plist in Resources */ = {isa = PBXBuildFile; fileRef = 272741A51C873AFD00F94AB3 /* questions.plist */; };
+		272741A91C873F3400F94AB3 /* Question.m in Sources */ = {isa = PBXBuildFile; fileRef = 272741A81C873F3400F94AB3 /* Question.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +53,9 @@
 		272741931C8558E400F94AB3 /* picGuessUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = picGuessUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		272741971C8558E400F94AB3 /* picGuessUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = picGuessUITests.m; sourceTree = "<group>"; };
 		272741991C8558E400F94AB3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		272741A51C873AFD00F94AB3 /* questions.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = questions.plist; sourceTree = "<group>"; };
+		272741A71C873F3400F94AB3 /* Question.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Question.h; sourceTree = "<group>"; };
+		272741A81C873F3400F94AB3 /* Question.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Question.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +115,8 @@
 				272741801C8558E400F94AB3 /* LaunchScreen.storyboard */,
 				272741831C8558E400F94AB3 /* Info.plist */,
 				272741721C8558E400F94AB3 /* Supporting Files */,
+				272741A71C873F3400F94AB3 /* Question.h */,
+				272741A81C873F3400F94AB3 /* Question.m */,
 			);
 			path = picGuess;
 			sourceTree = "<group>";
@@ -117,6 +124,7 @@
 		272741721C8558E400F94AB3 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				272741A51C873AFD00F94AB3 /* questions.plist */,
 				272741731C8558E400F94AB3 /* main.m */,
 			);
 			name = "Supporting Files";
@@ -243,6 +251,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				272741A61C873AFD00F94AB3 /* questions.plist in Resources */,
 				272741821C8558E400F94AB3 /* LaunchScreen.storyboard in Resources */,
 				2727417F1C8558E400F94AB3 /* Assets.xcassets in Resources */,
 				2727417D1C8558E400F94AB3 /* Main.storyboard in Resources */,
@@ -271,6 +280,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2727417A1C8558E400F94AB3 /* ViewController.m in Sources */,
+				272741A91C873F3400F94AB3 /* Question.m in Sources */,
 				272741771C8558E400F94AB3 /* AppDelegate.m in Sources */,
 				272741741C8558E400F94AB3 /* main.m in Sources */,
 			);
