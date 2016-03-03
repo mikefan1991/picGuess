@@ -354,7 +354,7 @@
         //show animation of congradulations
         UILabel* congLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200, 50)];
         congLabel.center = self.view.center;
-        [congLabel setText:@"Congradulations!"];
+        [congLabel setText:@"Congratulations!"];
         [congLabel setTextAlignment:NSTextAlignmentCenter];
         [congLabel setTextColor:[UIColor redColor]];
         congLabel.layer.cornerRadius = 10.0;
