@@ -19,4 +19,5 @@
 + (NSArray*)questions;
 
 - (NSString *)description;
+- (void) randomOptions;
 @end

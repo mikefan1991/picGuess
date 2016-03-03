@@ -84,6 +84,7 @@
         [_picButton setImage:[UIImage imageNamed:@"movie_jf"] forState:UIControlStateNormal];
         _picButton.adjustsImageWhenHighlighted = NO;
         
+        [_picButton addTarget:self action:@selector(resizeImage) forControlEvents:UIControlEventTouchUpInside];
     }
     return _picButton;
 }
@@ -97,6 +98,8 @@
         [_leftButton1 setTitle:@"Hint" forState:UIControlStateNormal];
         [_leftButton1 setTitleColor:[UIColor colorWithWhite:0.5 alpha:0.6] forState:UIControlStateHighlighted];
         _leftButton1.titleLabel.font = [UIFont systemFontOfSize:15];
+        
+        [_leftButton1 addTarget:self action:@selector(hintClick) forControlEvents:UIControlEventTouchUpInside];
     }
     return _leftButton1;
 }
@@ -123,6 +126,8 @@
         [_rightButton1 setTitle:@"Next" forState:UIControlStateNormal];
         [_rightButton1 setTitleColor:[UIColor colorWithWhite:0.5 alpha:0.6] forState:UIControlStateHighlighted];
         _rightButton1.titleLabel.font = [UIFont systemFontOfSize:15];
+        
+        [_rightButton1 addTarget:self action:@selector(nextQuestion) forControlEvents:UIControlEventTouchUpInside];
     }
     return _rightButton1;
 }
@@ -135,6 +140,8 @@
         [_rightButton2 setTitle:@"Restart" forState:UIControlStateNormal];
         [_rightButton2 setTitleColor:[UIColor colorWithWhite:0.5 alpha:0.6] forState:UIControlStateHighlighted];
         _rightButton2.titleLabel.font = [UIFont systemFontOfSize:15];
+        
+        [_rightButton2 addTarget:self action:@selector(restartProgram) forControlEvents:UIControlEventTouchUpInside];
     }
     return _rightButton2;
 }
@@ -189,8 +196,6 @@
     [self.view addSubview:self.rightButton1];
     [self.view addSubview:self.rightButton2];
     [self.view addSubview:self.coinButton];
-    [self.picButton addTarget:self action:@selector(resizeImage) forControlEvents:UIControlEventTouchUpInside];
-    [self.rightButton1 addTarget:self action:@selector(nextQuestion) forControlEvents:UIControlEventTouchUpInside];
     
     [self.view addSubview:self.answerView];
     [self.view addSubview:self.optionView];
@@ -262,6 +267,7 @@
         [btn setBackgroundImage:[UIImage imageNamed:@"btn_answer_highlighted"] forState:UIControlStateHighlighted];
         [btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         [self.answerView addSubview:btn];
+        btn.tag = i;
         
         [btn addTarget:self action:@selector(answerClick:) forControlEvents:UIControlEventTouchUpInside];
     }
@@ -287,7 +293,7 @@
             btn.tag = i;//record the button index
             [btn setBackgroundImage:[UIImage imageNamed:@"btn_option"] forState:UIControlStateNormal];
             [btn setBackgroundImage:[UIImage imageNamed:@"btn_option_highlighted"] forState:UIControlStateHighlighted];
-            [btn setTitle:nextQ.options[i] forState:UIControlStateNormal];
+            //[btn setTitle:nextQ.options[i] forState:UIControlStateNormal];
             [btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
             [self.optionView addSubview:btn];
             
@@ -295,11 +301,11 @@
         }
 
     }
-    else {
-        for (UIButton* btn in self.optionView.subviews) {
-            [btn setTitle:nextQ.options[btn.tag] forState:UIControlStateNormal];
-            btn.hidden = NO;
-        }
+    
+    [nextQ randomOptions];
+    for (UIButton* btn in self.optionView.subviews) {
+        [btn setTitle:nextQ.options[btn.tag] forState:UIControlStateNormal];
+        btn.hidden = NO;
     }
     
     
@@ -342,7 +348,31 @@
     //answer is right
     if ([strM isEqualToString:currQ.answer]) {
         [self setAnswerButtonColor:[UIColor greenColor]];
-        [self nextQuestion];
+        //add more coins
+        [self changeCoin:1000];
+        
+        //show animation of congradulations
+        UILabel* congLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200, 50)];
+        congLabel.center = self.view.center;
+        [congLabel setText:@"Congradulations!"];
+        [congLabel setTextAlignment:NSTextAlignmentCenter];
+        [congLabel setTextColor:[UIColor redColor]];
+        congLabel.layer.cornerRadius = 10.0;
+        congLabel.font = [UIFont systemFontOfSize:23];
+        congLabel.backgroundColor = [UIColor whiteColor];
+        congLabel.alpha = 0.0;
+        [self.view addSubview:congLabel];
+        [UIView animateWithDuration:0.7 animations:^{
+            congLabel.alpha = 1.0;
+        } completion:^(BOOL finished) {
+            [UIView animateWithDuration:2 animations:^{
+                congLabel.alpha = 0.0;
+            } completion:^(BOOL finished) {
+                [congLabel removeFromSuperview];
+                [self nextQuestion];
+            }];
+        }];
+        
     }
     //answer is wrong
     else {
@@ -363,7 +393,7 @@
         return;
     }
     
-    UIButton* originalOptionButton = [self findOptionButtonWithTitle:aButton.currentTitle];
+    UIButton* originalOptionButton = [self findOptionButtonWithTitle:aButton.currentTitle needHidden:YES];
     
     originalOptionButton.hidden = NO;
     
@@ -372,13 +402,49 @@
     [self setAnswerButtonColor:[UIColor blackColor]];
 }
 
-- (UIButton*)findOptionButtonWithTitle:(NSString*)title {
+- (UIButton*)findOptionButtonWithTitle:(NSString*)title needHidden:(BOOL)flag {
     for (UIButton* btn in self.optionView.subviews) {
-        if ([btn.currentTitle isEqualToString:title] && btn.hidden) {
+        if ([btn.currentTitle isEqualToString:title] && btn.isHidden == flag) {
             return btn;
         }
     }
     return nil;
+}
+
+#pragma mark - hint click
+- (void) hintClick {
+    Question* currQ = self.questions[self.index];
+    NSString* currAns = currQ.answer;
+    
+    //remove all answers that are not correct
+    for (UIButton* btn in self.answerView.subviews) {
+        if (btn.currentTitle.length != 0 && ![btn.currentTitle isEqualToString:[currAns substringWithRange:NSMakeRange(btn.tag, 1)]]) {
+            [self answerClick:btn];
+        }
+    }
+    
+    //find first empty answer button and put into the right answer
+    UIButton* firstEmptyAnsButton = [self findFirstAnsButton];
+    NSString* title = [currAns substringWithRange:NSMakeRange(firstEmptyAnsButton.tag, 1)];
+    UIButton* optionButton = [self findOptionButtonWithTitle:title needHidden:NO];
+    [self optionClick:optionButton];
+
+    //use the hint will cause reduce in coins
+    [self changeCoin:-500];
+}
+
+#pragma mark - points manage
+- (void) changeCoin:(int) coin{
+    int currCoin = self.coinButton.currentTitle.intValue;
+    currCoin += coin;
+    [self.coinButton setTitle:[NSString stringWithFormat:@"%d", currCoin] forState:UIControlStateNormal];
+}
+
+#pragma mark - restart program
+- (void) restartProgram {
+    [self.coinButton setTitle:@"0" forState:UIControlStateNormal];
+    self.index = -1;
+    [self nextQuestion];
 }
 
 - (void)didReceiveMemoryWarning {
