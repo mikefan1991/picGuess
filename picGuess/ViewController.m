@@ -233,14 +233,20 @@
     self.index++;
     if(self.index == self.questions.count) {
         //Do some interesting thing;
-        return;
+        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Congratulations" message:@"Do you want to play again?" preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"No" style:UIAlertActionStyleCancel handler:nil]];
+        [alert addAction:[UIAlertAction actionWithTitle:@"Play" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [self restartProgram];
+        }]];
+        [self presentViewController:alert animated:YES completion:nil];
     }
-    //get next question from the array
-    Question* nextQ = self.questions[self.index];
-    [self setUpInfo:nextQ];
-    [self createAnswerButtons:nextQ];
-    [self createOptionButtons:nextQ];
-    
+    else {
+        //get next question from the array
+        Question* nextQ = self.questions[self.index];
+        [self setUpInfo:nextQ];
+        [self createAnswerButtons:nextQ];
+        [self createOptionButtons:nextQ];
+    }
 }
 
 - (void) setUpInfo:(Question*) nextQ {
@@ -354,7 +360,7 @@
         //show animation of congradulations
         UILabel* congLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200, 50)];
         congLabel.center = self.view.center;
-        [congLabel setText:@"Congratulations!"];
+        [congLabel setText:@"GREAT!"];
         [congLabel setTextAlignment:NSTextAlignmentCenter];
         [congLabel setTextColor:[UIColor redColor]];
         congLabel.layer.cornerRadius = 10.0;
